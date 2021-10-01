@@ -55,14 +55,17 @@ Precipitations_df =
 
 Write a paragraph about the Mr.Trash Wheel dataset:
 
-The dataset of Mr.Trash Wheel contains data of the trashes collected by Mr. Trash Wheel from `r min(Mr_trash_df$year)` to `r max(Mr_trash_df$year)`. It contains a total of `r nrow(Mr_trash_df)` observations and `r ncol(Mr_trash_df)` variables (`r colnames(Mr_trash_df)`). It has collected a total of `r sum(Mr_trash_df$weight_tons)` tons and `r sum(Mr_trash_df$volume_cubic_yards)` cubic yards of trashes. The median number of sports balls in a dumpster in 2017 is `r median(pull(filter(Mr_trash_df, year == 2017),sports_balls))`.
+The dataset of Mr.Trash Wheel (Mr.Trash_df) contains data of the trashes collected by Mr. Trash Wheel from `r min(Mr_trash_df$year)` to `r max(Mr_trash_df$year)`. It contains a total of `r nrow(Mr_trash_df)` observations and `r ncol(Mr_trash_df)` variables (`r colnames(Mr_trash_df)`). It has collected a total of `r sum(Mr_trash_df$weight_tons)` tons and `r sum(Mr_trash_df$volume_cubic_yards)` cubic yards of trashes. The median number of sports balls in a dumpster in 2017 is `r median(pull(filter(Mr_trash_df, year == 2017),sports_balls))`.
 
 ```{r}
 # To find the median number of sports balls in a dumpster in 2017
 
 get_2017_df = filter(Mr_trash_df, year == 2017)
 pull_sports_balls = pull(get_2017_df,sports_balls)
-pull_sports_balls
 median(pull_sports_balls)
 ```
+
+Write a paragraph for the combined precipitation data set:
+
+The dataset of 2018 and 2019 precipitation contains data of the precipitations collected from `r min(Precipitations_df$year)` to `r max(Precipitations_df$year)`, with the maximum precipitation of `r max(Precipitations_df$total, na.rm = TRUE)` and minimum precipitation of `r min(Precipitations_df$total,na.rm = TRUE)`. It contains a total of `r nrow(Precipitations_df)` observations and `r ncol(Precipitations_df)` variables (`r colnames(Precipitations_df)`). The total precipitation in 2018 is `r sum(pull(Precipitations_df,total),na.rm = TRUE)`.
 
