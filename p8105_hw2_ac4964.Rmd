@@ -69,3 +69,37 @@ Write a paragraph for the combined precipitation data set:
 
 The dataset of 2018 and 2019 precipitation contains data of the precipitations collected from `r min(Precipitations_df$year)` to `r max(Precipitations_df$year)`, with the maximum precipitation of `r max(Precipitations_df$total, na.rm = TRUE)` and minimum precipitation of `r min(Precipitations_df$total,na.rm = TRUE)`. It contains a total of `r nrow(Precipitations_df)` observations and `r ncol(Precipitations_df)` variables (`r colnames(Precipitations_df)`). The total precipitation in 2018 is `r sum(pull(Precipitations_df,total),na.rm = TRUE)`.
 
+
+
+# Problem 2
+
+Read and clean the data in pols-month.csv
+
+```{r}
+pols_month_df = 
+  read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(mon, into = c("year", "month","day"), sep = "-",convert = TRUE) %>% 
+  mutate( 
+    month = month.name[month],
+    #create a president variable taking values gop and dem
+    president = c("gop","dem")
+    ) %>% 
+  select(c(-prez_gop,-prez_dem,-day))
+```
+
+read and clean data in snp.csv
+
+```{r}
+snp_df = 
+  read_csv("data/fivethirtyeight_datasets/snp.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(date, into = c("month", "day","year"), sep = "/",convert = TRUE) %>% 
+  mutate( 
+    month = month.name[month]
+    ) %>% 
+  relocate(year)
+
+
+```
+
