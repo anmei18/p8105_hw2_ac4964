@@ -77,61 +77,64 @@ The dataset of 2018 and 2019 precipitation contains data of the precipitations c
 
 Read and clean the data in pols-month.csv
 
-```{r}
+```{r message=FALSE}
 pols_month_df = 
   read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>% 
   janitor::clean_names() %>% 
   separate(mon, into = c("year", "month","day"), sep = "-",convert = TRUE) %>% 
   mutate( 
     month = month.name[month],
-    #create a president variable taking values gop and dem
-    #president = c("gop","dem")
     ) %>% 
+  mutate(president = recode(prez_gop, `0` = "dem", `1` = "gop")) %>% 
   select(c(-prez_gop,-prez_dem,-day))
 ```
 
 read and clean data in snp.csv
 
-```{r}
+```{r message=FALSE}
 snp_df = 
-  read.csv("data/fivethirtyeight_datasets/snp.csv") %>% 
+  read_csv("data/fivethirtyeight_datasets/snp.csv") %>% 
   janitor::clean_names() %>% 
-  separate(date, into = c("month", "day","year"), sep = "/",convert = TRUE) %>% 
-  mutate( 
-    month = month.name[month],
-    ) %>% 
-  arrange(year, month) %>% 
+  mutate(date = lubridate::mdy(date)) %>% 
+  separate(date, into = c("year","month","day"), sep = "-",convert = TRUE) %>% 
+  mutate(year = ifelse(year > 2021, year - 100, year)) %>% 
+  arrange(year, month) %>%
+  mutate(month = month.name[month]) %>% 
   relocate(year)  
 
 ```
 
 Read and clean the unemployment data
 
-```{r}
+```{r message=FALSE }
 unemploy_df = 
-  read.csv("data/fivethirtyeight_datasets/unemployment.csv") %>% 
-  janitor::clean_names() %>% 
+  read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>% 
+  janitor::clean_names() %>%
+  mutate(year = as.integer(year)) %>% 
   pivot_longer(
     jan:dec,
     names_to = "month",
-    values_to = "unemployment") 
+    values_to = "unemployment") %>% 
+  mutate(month = recode(month, "jan" = "January", "feb" = "February", "mar" = "March", "apr" = "April", "may" = "May", "jun" = "June", "jul" = "July", "aug" = "August", "sep" = "September", "oct" = "October", "nov" = "November", "dec" = "December"))
 
 
 ```
 
 
-Merge snp into pols
+Merge snp into pols, and merging unemployment into the result
 
 ```{r}
-snp_pols_df =
-  full_join(pols_month_df, snp_df,by = c("year","month")) 
+snp_into_pols_df = left_join(pols_month_df, snp_df,by = c("year","month")) 
 
-
+snp_pols_unemploy_df = left_join(snp_into_pols_df, unemploy_df, by = c("year","month"))
 
 ```
 
 Write a paragraph about these datasets
 
+The dataset of `pols_months_df` contains data collected from `r min(pols_month_df$year)` to `r max(pols_month_df$year)`. It contains a total of `r nrow(pols_month_df)` observations and `r ncol(pols_month_df)` variables (`r colnames(pols_month_df)`). The dataset of `snp_df` contains data collected from `r min(snp_df$year)` to `r max(snp_df$year)`. It contains a total of `r nrow(snp_df)` observations and `r ncol(snp_df)` variables (`r colnames(snp_df)`). The dataset of `unemployment_df` contains data collected from `r min(unemploy_df$year)` to `r max(unemploy_df$year)`. It contains a total of `r nrow(unemploy_df)` observations and `r ncol(unemploy_df)` variables (`r colnames(unemploy_df)`). 
+
+After merging all three datasets, the resulting dataset `snp_pols_unemploy_df` contains data collected from `r min(snp_pols_unemploy_df$year)` to `r max(snp_pols_unemploy_df$year)`. It contains a total of `r nrow(snp_pols_unemploy_df)` observations and `r ncol(snp_pols_unemploy_df)` variables (`r colnames(snp_pols_unemploy_df)`). 
 
 
 # Problem 3
