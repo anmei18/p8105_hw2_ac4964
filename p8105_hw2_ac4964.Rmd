@@ -15,7 +15,11 @@ library(ggplot2)
 
 # Problem 1
 
-Read and clean the Mr.Trash Wheel sheet
+Read and clean the Mr. Trash Wheel sheet
+1. specify the sheet in the Excel file and to omit non-data entries (rows with notes / figures; columns containing notes) using arguments in read_excel
+2. use reasonable variable names
+3. omit rows that do not include dumpster-specific data
+4. round the number of sports balls to the nearest integer
 
 ```{r}
 Mr_trash_df = 
@@ -29,7 +33,7 @@ Mr_trash_df =
 ```
 
 
-Read and clean precipitation data for 2018 and 2019
+Read and clean precipitation data for 2018 and 2019. For each, omit rows without precipitation data and add a variable for year. 
 
 ```{r}
 Precipitation_2018_df = 
@@ -46,7 +50,7 @@ Precipitation_2019_df =
 ```
 
 
-Combine 2018 and 2019 precipitation datasets
+Next, combine precipitation datasets and convert month to a character variable 
 
 ```{r}
 Precipitations_df = 
@@ -55,7 +59,9 @@ Precipitations_df =
 ```
 
 
-Write a paragraph about the Mr.Trash Wheel dataset:
+
+Write a paragraph about Mr.Trash Wheel dataset:
+
 
 The dataset of Mr.Trash Wheel (Mr.Trash_df) contains data of the trashes collected by Mr. Trash Wheel from `r min(Mr_trash_df$year)` to `r max(Mr_trash_df$year)`. It contains a total of `r nrow(Mr_trash_df)` observations and `r ncol(Mr_trash_df)` variables (`r colnames(Mr_trash_df)`). It has collected a total of `r sum(Mr_trash_df$weight_tons)` tons and `r sum(Mr_trash_df$volume_cubic_yards)` cubic yards of trashes. The median number of sports balls in a dumpster in 2017 is `r median(pull(filter(Mr_trash_df, year == 2017),sports_balls))`.
 
@@ -75,7 +81,7 @@ The dataset of 2018 and 2019 precipitation contains data of the precipitations c
 
 # Problem 2
 
-Read and clean the data in pols-month.csv
+First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
 
 ```{r message=FALSE}
 pols_month_df = 
@@ -89,7 +95,8 @@ pols_month_df =
   select(c(-prez_gop,-prez_dem,-day))
 ```
 
-read and clean data in snp.csv
+
+Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
 ```{r message=FALSE}
 snp_df = 
@@ -104,7 +111,8 @@ snp_df =
 
 ```
 
-Read and clean the unemployment data
+
+Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
 
 ```{r message=FALSE }
 unemploy_df = 
@@ -120,7 +128,8 @@ unemploy_df =
 
 ```
 
-Merge snp into pols, and merging unemployment into the result
+
+Join the datasets by merging snp into pols, and merging unemployment into the result.
 
 ```{r}
 snp_into_pols_df = left_join(pols_month_df, snp_df,by = c("year","month")) 
@@ -138,7 +147,7 @@ After merging all three datasets, the resulting dataset `snp_pols_unemploy_df` c
 
 # Problem 3
 
-Read and load Popular baby names data
+Load and tidy Popular baby names data
 
 ```{r}
 baby_names_df =
@@ -153,9 +162,9 @@ baby_names_df =
   distinct()
 ```
 
-Produce a reader-friendly table showing the rank in the popularity of the name "Olivia" as a female baby name over time.
+Produce a well-structured, reader-friendly table showing the rank in popularity of the name “Olivia” as a female baby name over time; this should have rows for ethnicities and columns for year.
 
-```{r}
+```{r message = FALSE}
 Olivia_rank_df = 
   filter(baby_names_df, childs_first_name == "Olivia", gender == "Female") %>% 
   arrange(year_of_birth,rank)
@@ -173,7 +182,7 @@ Olivia_rank =
 ```
 
 
-Produce a table showinh the most popular name among male children over time
+Produce a similar table showing the most popular name among male children over time.
 
 ```{r}
 male_rank_df = 
@@ -182,18 +191,17 @@ male_rank_df =
 
 male_rank = 
   male_rank_df %>% 
-  select(c(-gender,-count)) %>% 
+  select(c(-gender,-rank,-count)) %>% 
   pivot_wider(
     names_from = "year_of_birth",
-    values_from = "rank",
+    values_from = "childs_first_name",
   ) %>% 
-  relocate(childs_first_name) %>% 
-  arrange(childs_first_name) %>% 
   knitr::kable() 
 ```
 
 
-Produce a scatter plot for male, white non-Hispanic children born in 2016.
+Finally, for male, white non-hispanic children born in 2016, produce a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis).
+
 
 ```{r}
 
