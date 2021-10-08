@@ -8,8 +8,6 @@ output: github_document
 ```{r}
 library(tidyverse)
 library(readxl)
-library(dplyr)
-library(ggplot2)
 
 ```
 
@@ -23,7 +21,7 @@ Read and clean the Mr. Trash Wheel sheet
 
 ```{r}
 Mr_trash_df = 
-  read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",sheet = "Mr. Trash Wheel", range = "A2:N406") %>% 
+  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",sheet = "Mr. Trash Wheel", range = "A2:N534") %>% 
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
   mutate(
@@ -37,13 +35,13 @@ Read and clean precipitation data for 2018 and 2019. For each, omit rows without
 
 ```{r}
 Precipitation_2018_df = 
-  read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",sheet = "2018 Precipitation", range = "A2:B14") %>% 
+  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",sheet = "2018 Precipitation", range = "A2:B14") %>% 
   janitor::clean_names() %>% 
   mutate(year = "2018") %>% 
   relocate(year)
 
 Precipitation_2019_df = 
-  read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",sheet = "2019 Precipitation", range = "A2:B14") %>% 
+  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",sheet = "2019 Precipitation", range = "A2:B14") %>% 
   janitor::clean_names() %>% 
   mutate(year = "2019") %>% 
   relocate(year)
